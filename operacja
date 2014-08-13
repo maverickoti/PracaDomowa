@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+    </head>
+    <body>
+        <?php
+//Stworzenie tablicy dwuwymiarowej na podstawie podanych przez użytkownika ilości kolumn, oraz wierszy.
+//Zapełnienie komórek wartościami losowymi
+//Zczytanie z powstałej tabeli wartości w sposób ślimak.
+//Wypisanie zczytanych wartości na ekranie
+function createSpiral($w, $h) {
+   if ($w <= 0 || $h <= 0) return FALSE;
+   
+   $ar   = Array();
+   $used = Array();
+   
+   // ustalenie siatki/tabeli
+   for ($j = 0; $j < $h; $j++) {
+      $ar[$j] = Array();
+      for ($i = 0; $i < $w; $i++)
+          $ar[$j][$i]   = '-';
+   }
+   
+   // Ustalenie drugiej tabeli z większym wymiarem
+   for ($j = -1; $j <= $h; $j++) {
+      $used[$j] = Array();
+      for ($i = -1; $i <= $w; $i++) {
+          if ($i == -1 || $i == $w || $j == -1 || $j == $h)
+             $used[$j][$i] = true;
+          else
+             $used[$j][$i] = false;
+      }
+   }
+   
+   // wypełnianie siatki
+   $n = 0;
+   $i = 0;
+   $j = 0;
+   $direction = 0; // 0 - lewo, 1 - dół, 2 - prawo, 3 - góra
+   while (true) {
+      $ar[$j][$i]   = $n++;
+      $used[$j][$i] = true;
+      
+      // Advance
+      switch ($direction) {
+         case 0:
+            $i++; // w prawo
+            if ($used[$j][$i]) { 
+               $i--; $j++; 
+               $direction = 1;
+            }
+            break;
+        case 1:
+           $j++; // do dołu
+           if ($used[$j][$i]) { 
+               $j--; $i--; 
+               $direction = 2;
+            }
+            break;
+         case 2:
+            $i--; // w lewo
+            if ($used[$j][$i]) { 
+               $i++; $j--; 
+               $direction = 3;
+            }
+            break;
+         case 3:
+            $j--; // do góry
+            if ($used[$j][$i]) {
+               $j++; $i++;
+               $direction = 0;
+            }
+            break;
+       }
+       
+       if ($used[$j][$i])
+           return $ar;
+   }
+}
+
+function print2DGrid($array) {
+   foreach ($array as $row) {
+       foreach ($row as $col) {
+          print sprintf("% 2d ", $col);
+       }
+       print "\n";
+   }
+}
+
+//Przekazanie wartośi
+if(count($_POST) == 2)
+{
+   $width = $_POST['wierszy'];
+   $height = $_POST['kolumna'];
+}
+else
+{
+   echo 'Podane wartości nie spełniają kryteriów dodatnich liczb.';
+}
+
+print2DGrid(createSpiral($width, $height));
+?>
+    </body>
+</html>
